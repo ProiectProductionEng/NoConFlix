@@ -1,5 +1,5 @@
 # Prerequisites
-
+# Stefan a fost aici
 For using Github Codespaces, no prerequisites are mandatory.
 Follow the [./PREREQUISITES.md](./PREREQUISITES.md) instructions to configure a local virtual machine with Ubuntu, Docker, IntelliJ.
 
