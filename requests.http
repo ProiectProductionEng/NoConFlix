@@ -12,6 +12,9 @@
 ### Get all users
 GET http://localhost:8080/api/users
 
+### Get all movies
+GET http://localhost:8080/api/movies
+
 ### Create a new user (run this to populate variables for other requests)
 # @name createUser
 POST http://localhost:8080/api/users
@@ -20,6 +23,21 @@ Content-Type: application/json
 {
     "name": "Jean Valjean",
     "email": "prisoner24601@france.fr"
+}
+
+### Create a new movie
+# @name CreateMovie
+POST http://localhost:8080/api/movies
+Content-Type: application/json
+
+{
+    "title": "Jaws",
+    "description":"Pioneering horror film",
+    "genreId":"0",
+    "releaseDate":"08.03.2026",
+    "duration":3000,
+    "thumbnailUrl":"https://google.com",
+    "videoUrl":"https://google.com"
 }
 
 ### Get user by ID (uses ID from createUser response)
