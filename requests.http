@@ -8,8 +8,11 @@ GET http://localhost:8080/api/users
 ### Get all movies
 GET http://localhost:8080/api/movies
 
-### Get all users
+### Get all genres
 GET http://localhost:8080/api/genres
+
+### Get all subscriptions
+GET http://localhost:8080/api/subscriptions
 
 
 ### Create a new user (run this to populate variables for other requests)
@@ -21,6 +24,7 @@ Content-Type: application/json
     "name": "Jean Valjean",
     "email": "prisoner24601@france.fr"
 }
+
 ### Create a new genre
 # @name createGenre
 POST http://localhost:8080/api/genres
@@ -54,6 +58,18 @@ Content-Type: application/json
     "videoUrl":"https://google.com"
 }
 
+### Create a new subscription
+# @name createSubscription
+POST http://localhost:8080/api/subscriptions
+Content-Type: application/json
+
+{
+    "name": "30 day trial",
+    "userId": "{{createUser.response.body.id}}",
+    "price": 0.0,
+    "duration": 3000,
+    "end_date": "31.03.2026"
+}
 
 ### Get user by ID (uses ID from createUser response)
 GET http://localhost:8080/api/users/{{createUser.response.body.id}}
@@ -91,6 +107,18 @@ Content-Type: application/json
     "name": "Family"
 }
 
+### Update subscription (PUT)
+PUT http://localhost:8080/api/subscriptions/{{createSubscription.response.body.id}}
+Content-Type: application/json
+
+{
+    "name": "10 day trial",
+    "userId": "{{createUser.response.body.id}}",
+    "price": 0.0,
+    "duration": 1000,
+    "end_date": "11.03.2026"
+}
+
 ### Change user name (PATCH)
 PATCH http://localhost:8080/api/users/{{createUser.response.body.id}}/name
 Content-Type: application/json
@@ -107,3 +135,6 @@ DELETE http://localhost:8080/api/movies/{{createMovie.response.body.id}}
 
 ### Delete genre
 DELETE http://localhost:8080/api/genres/{{createGenre.response.body.id}}
+
+### Delete subscription
+DELETE http://localhost:8080/api/subscriptions/{{createSubscription.response.body.id}}
