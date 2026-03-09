@@ -5,20 +5,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ro.unibuc.prodeng.model.TodoEntity;
-import ro.unibuc.prodeng.repository.TodoRepository;
 import ro.unibuc.prodeng.model.UserEntity;
 import ro.unibuc.prodeng.model.MovieEntity;
 import ro.unibuc.prodeng.repository.MovieRepository;
-import ro.unibuc.prodeng.request.AssignTodoRequest;
-import ro.unibuc.prodeng.request.CreateTodoRequest;
 import ro.unibuc.prodeng.request.CreateUserRequest;
 import ro.unibuc.prodeng.request.CreateMovieRequest;
-import ro.unibuc.prodeng.request.EditTodoRequest;
-import ro.unibuc.prodeng.response.TodoResponse;
 import ro.unibuc.prodeng.response.UserResponse;
 import ro.unibuc.prodeng.response.MovieResponse;
 import ro.unibuc.prodeng.exception.EntityNotFoundException;
+import ro.unibuc.prodeng.request.EditMovieRequest;
 
 @Service
 public class MovieService {
@@ -45,6 +40,31 @@ public class MovieService {
         );
         MovieEntity saved = movieRepository.save(movie);
         return toResponse(saved);
+    }
+    public MovieResponse getMovieById(String id) throws EntityNotFoundException {
+        MovieEntity movie = movieRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(id));
+        return toResponse(movie);
+    }
+
+    public MovieEntity getMovieEntityById(String id) throws EntityNotFoundException {
+        return movieRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(id));
+    }
+
+    public MovieResponse editMovie(String id, EditMovieRequest newMovie) throws EntityNotFoundException {
+        MovieEntity existing = movieRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(id));
+        MovieEntity updated = new MovieEntity(existing.id(),newMovie.title(),newMovie.description(),newMovie.genreId(),newMovie.releaseDate(),newMovie.duration(),newMovie.totalViews(),newMovie.thumbnailUrl(),newMovie.videoUrl());
+        MovieEntity saved = movieRepository.save(updated);
+        return toResponse(saved);
+    }
+    
+    public void deleteMovie(String id) throws EntityNotFoundException {
+        if (!movieRepository.existsById(id)) {
+            throw new EntityNotFoundException(id);
+        }
+        movieRepository.deleteById(id);
     }
 
     private MovieResponse toResponse(MovieEntity movie) {

@@ -7,9 +7,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 import ro.unibuc.prodeng.repository.UserRepository;
 import ro.unibuc.prodeng.request.CreateMovieRequest;
-import ro.unibuc.prodeng.request.CreateTodoRequest;
 import ro.unibuc.prodeng.request.CreateUserRequest;
-import ro.unibuc.prodeng.service.TodoService;
 import ro.unibuc.prodeng.service.UserService;
 import ro.unibuc.prodeng.service.MovieService;
 
@@ -23,9 +21,6 @@ public class ProdEngApplication {
 	private UserService userService;
 
 	@Autowired
-	private TodoService todoService;
-
-	@Autowired
 	private MovieService movieService;
 
 	@Autowired
@@ -37,7 +32,7 @@ public class ProdEngApplication {
 
 	@PostConstruct
 	public void runAfterObjectCreated() {
-			CreateMovieRequest movieRequest = new CreateMovieRequest("jaws","test","11","1",1,"test","test");
-			movieService.createMovie(movieRequest);
+			// CreateMovieRequest movieRequest = new CreateMovieRequest("jaws","test","11","1",1,"test","test");
+			// movieService.createMovie(movieRequest);
 	}
 }

@@ -8,16 +8,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
-import ro.unibuc.prodeng.request.AssignTodoRequest;
-import ro.unibuc.prodeng.request.CreateTodoRequest;
+import ro.unibuc.prodeng.request.ChangeNameRequest;
+import ro.unibuc.prodeng.request.EditMovieRequest;
 import ro.unibuc.prodeng.request.CreateUserRequest;
 import ro.unibuc.prodeng.request.CreateMovieRequest;
-import ro.unibuc.prodeng.request.EditTodoRequest;
-import ro.unibuc.prodeng.response.TodoResponse;
 import ro.unibuc.prodeng.response.UserResponse;
 import ro.unibuc.prodeng.response.MovieResponse;
 import ro.unibuc.prodeng.exception.EntityNotFoundException;
-import ro.unibuc.prodeng.service.TodoService;
 import ro.unibuc.prodeng.service.MovieService;
 
 @RestController
@@ -38,5 +35,19 @@ public class MovieController {
         System.out.println("Test");
         MovieResponse movie = movieService.createMovie(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(movie);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MovieResponse> updateMovie(
+            @PathVariable String id,
+            @Valid @RequestBody EditMovieRequest request) throws EntityNotFoundException {
+        MovieResponse movie = movieService.editMovie(id, request);
+        return ResponseEntity.ok(movie);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMovie(@PathVariable String id) throws EntityNotFoundException {
+        movieService.deleteMovie(id);
+        return ResponseEntity.noContent().build();
     }
 }
