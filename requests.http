@@ -8,6 +8,10 @@ GET http://localhost:8080/api/users
 ### Get all movies
 GET http://localhost:8080/api/movies
 
+### Get all users
+GET http://localhost:8080/api/genres
+
+
 ### Create a new user (run this to populate variables for other requests)
 # @name createUser
 POST http://localhost:8080/api/users
@@ -16,6 +20,23 @@ Content-Type: application/json
 {
     "name": "Jean Valjean",
     "email": "prisoner24601@france.fr"
+}
+### Create a new genre
+# @name createGenre
+POST http://localhost:8080/api/genres
+Content-Type: application/json
+
+{
+    "name": "Horror"
+}
+
+### Create a new genre
+# @name createGenre2
+POST http://localhost:8080/api/genres
+Content-Type: application/json
+
+{
+    "name": "Comedy"
 }
 
 ### Create a new movie
@@ -26,12 +47,13 @@ Content-Type: application/json
 {
     "title": "Jaws",
     "description":"Pioneering horror film",
-    "genreId":"0",
+    "genreId": "{{createGenre.response.body.id}}", 
     "releaseDate":"08.03.2026",
     "duration":3000,
     "thumbnailUrl":"https://google.com",
     "videoUrl":"https://google.com"
 }
+
 
 ### Get user by ID (uses ID from createUser response)
 GET http://localhost:8080/api/users/{{createUser.response.body.id}}
@@ -61,6 +83,14 @@ Content-Type: application/json
     "videoUrl":"https://google.com"
 }
 
+### Update genre (PUT)
+PUT http://localhost:8080/api/genres/{{createGenre2.response.body.id}}
+Content-Type: application/json
+
+{
+    "name": "Family"
+}
+
 ### Change user name (PATCH)
 PATCH http://localhost:8080/api/users/{{createUser.response.body.id}}/name
 Content-Type: application/json
@@ -74,3 +104,6 @@ DELETE http://localhost:8080/api/users/{{createUser.response.body.id}}
 
 ### Delete movie
 DELETE http://localhost:8080/api/movies/{{createMovie.response.body.id}}
+
+### Delete genre
+DELETE http://localhost:8080/api/genres/{{createGenre.response.body.id}}
