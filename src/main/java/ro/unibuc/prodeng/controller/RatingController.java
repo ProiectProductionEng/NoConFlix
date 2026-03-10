@@ -2,15 +2,14 @@ package ro.unibuc.prodeng.controller;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
+import ro.unibuc.prodeng.exception.EntityNotFoundException;
 import ro.unibuc.prodeng.request.CreateRatingRequest;
+import ro.unibuc.prodeng.request.UpdateRatingRequest;
 import ro.unibuc.prodeng.response.RatingResponse;
 import ro.unibuc.prodeng.service.RatingService;
 
@@ -25,17 +24,26 @@ public class RatingController {
     }
 
     @PostMapping
-    public RatingResponse addRating(@RequestBody CreateRatingRequest request) {
-        return ratingService.addRating(request);
+    public ResponseEntity<RatingResponse> addRating(@Valid @RequestBody CreateRatingRequest request) {
+        RatingResponse response = ratingService.addRating(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteRating(@PathVariable String id) {
-        ratingService.deleteRating(id);
+    public ResponseEntity<Void> deleteRating(@PathVariable String id, @RequestParam String userId) throws EntityNotFoundException {
+        ratingService.deleteRating(id, userId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/movie/{movieId}")
-    public List<RatingResponse> getRatings(@PathVariable String movieId) {
-        return ratingService.getRatingsForMovie(movieId);
+    public ResponseEntity<List<RatingResponse>> getRatings(@PathVariable String movieId) {
+        List<RatingResponse> ratings = ratingService.getRatingsForMovie(movieId);
+        return ResponseEntity.ok(ratings);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<RatingResponse> updateRating(@PathVariable String id,@Valid @RequestBody UpdateRatingRequest request) throws EntityNotFoundException {
+        RatingResponse response = ratingService.updateRating(id, request);
+        return ResponseEntity.ok(response);
     }
 }
