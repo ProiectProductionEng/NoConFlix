@@ -8,6 +8,13 @@ GET http://localhost:8080/api/users
 ### Get all movies
 GET http://localhost:8080/api/movies
 
+### Get all genres
+GET http://localhost:8080/api/genres
+
+### Get all subscriptions
+GET http://localhost:8080/api/subscriptions
+
+
 ### Create a new user (run this to populate variables for other requests)
 # @name createUser
 POST http://localhost:8080/api/users
@@ -18,6 +25,24 @@ Content-Type: application/json
     "email": "prisoner24601@france.fr"
 }
 
+### Create a new genre
+# @name createGenre
+POST http://localhost:8080/api/genres
+Content-Type: application/json
+
+{
+    "name": "Horror"
+}
+
+### Create a new genre
+# @name createGenre2
+POST http://localhost:8080/api/genres
+Content-Type: application/json
+
+{
+    "name": "Comedy"
+}
+
 ### Create a new movie
 # @name createMovie
 POST http://localhost:8080/api/movies
@@ -26,11 +51,24 @@ Content-Type: application/json
 {
     "title": "Jaws",
     "description":"Pioneering horror film",
-    "genreId":"0",
+    "genreId": "{{createGenre.response.body.id}}", 
     "releaseDate":"08.03.2026",
     "duration":3000,
     "thumbnailUrl":"https://google.com",
     "videoUrl":"https://google.com"
+}
+
+### Create a new subscription
+# @name createSubscription
+POST http://localhost:8080/api/subscriptions
+Content-Type: application/json
+
+{
+    "name": "30 day trial",
+    "userId": "{{createUser.response.body.id}}",
+    "price": 0.0,
+    "duration": 3000,
+    "end_date": "31.03.2026"
 }
 
 ### Get user by ID (uses ID from createUser response)
@@ -61,6 +99,29 @@ Content-Type: application/json
     "videoUrl":"https://google.com"
 }
 
+<<<<<<< HEAD
+### Update genre (PUT)
+PUT http://localhost:8080/api/genres/{{createGenre2.response.body.id}}
+Content-Type: application/json
+
+{
+    "name": "Family"
+}
+
+### Update subscription (PUT)
+PUT http://localhost:8080/api/subscriptions/{{createSubscription.response.body.id}}
+Content-Type: application/json
+
+{
+    "name": "10 day trial",
+    "userId": "{{createUser.response.body.id}}",
+    "price": 0.0,
+    "duration": 1000,
+    "end_date": "11.03.2026"
+}
+
+=======
+>>>>>>> 54143eb3aa44252ff2c2809972470e22c29c662e
 ### Change user name (PATCH)
 PATCH http://localhost:8080/api/users/{{createUser.response.body.id}}/name
 Content-Type: application/json
@@ -74,3 +135,12 @@ DELETE http://localhost:8080/api/users/{{createUser.response.body.id}}
 
 ### Delete movie
 DELETE http://localhost:8080/api/movies/{{createMovie.response.body.id}}
+<<<<<<< HEAD
+
+### Delete genre
+DELETE http://localhost:8080/api/genres/{{createGenre.response.body.id}}
+
+### Delete subscription
+DELETE http://localhost:8080/api/subscriptions/{{createSubscription.response.body.id}}
+=======
+>>>>>>> 54143eb3aa44252ff2c2809972470e22c29c662e
