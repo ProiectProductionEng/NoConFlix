@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import ro.unibuc.prodeng.request.ChangeNameRequest;
 import ro.unibuc.prodeng.request.EditSubscriptionRequest;
 import ro.unibuc.prodeng.request.EditSubscriptionRequest;
@@ -47,9 +48,18 @@ public class SubscriptionController {
         return ResponseEntity.ok(subscription);
     }
 
+    @PatchMapping("/subscribe/{uid}")
+    public ResponseEntity<SubscriptionResponse> subscribeUser(
+            @PathVariable @NotBlank String uid,
+            @Valid @RequestBody EditSubscriptionRequest request) throws EntityNotFoundException {
+        SubscriptionResponse subscription = subscriptionService.subscribeUser(uid, request);
+        return ResponseEntity.ok(subscription);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSubscription(@PathVariable String id) throws EntityNotFoundException {
         subscriptionService.deleteSubscription(id);
         return ResponseEntity.noContent().build();
     }
+
 }
