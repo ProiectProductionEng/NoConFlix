@@ -4,10 +4,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import ro.unibuc.prodeng.model.UserEntity;
 import ro.unibuc.prodeng.model.SubscriptionEntity;
 import ro.unibuc.prodeng.repository.SubscriptionRepository;
+import ro.unibuc.prodeng.repository.UserRepository;
 import ro.unibuc.prodeng.request.CreateUserRequest;
 import ro.unibuc.prodeng.request.CreateSubscriptionRequest;
 import ro.unibuc.prodeng.response.UserResponse;
@@ -20,6 +23,9 @@ public class SubscriptionService {
 
     @Autowired
     private SubscriptionRepository subscriptionRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public List<SubscriptionResponse> getAllSubscriptions() throws EntityNotFoundException {
         return subscriptionRepository.findAll().stream().map(this::toResponse).toList();
@@ -56,7 +62,38 @@ public class SubscriptionService {
         SubscriptionEntity saved = subscriptionRepository.save(updated);
         return toResponse(saved);
     }
-    
+
+    public SubscriptionResponse subscribeUser(String uid, EditSubscriptionRequest newSubscription) throws EntityNotFoundException {
+        if (!userRepository.existsById(uid)) 
+            throw new EntityNotFoundException("User not found");
+
+        String id = subscriptionRepository.findByUserId(uid)
+                                          .map(SubscriptionEntity::id)
+                                          .orElse(null);
+
+        String   name       =newSubscription.name();
+        Float    price      =newSubscription.price();
+        Integer  duration   =newSubscription.duration();
+        String   end_date   =newSubscription.end_date();
+
+        if(id != null){
+            SubscriptionEntity lastSubscription = subscriptionRepository.findById(id).orElse(null);
+            // Verify existing fields and replacing them with new ones if they are there
+            name=newSubscription.name()==null?lastSubscription.name():name;
+            price=newSubscription.price()==null?lastSubscription.price():price;
+            duration=newSubscription.duration()==null?lastSubscription.duration():duration;
+            end_date=newSubscription.end_date()==null?lastSubscription.end_date():end_date;
+        }
+        SubscriptionEntity updated = new SubscriptionEntity(
+            id,
+            uid,
+            name,
+            price,
+            duration,
+            calculateEndDate(end_date,duration));
+        SubscriptionEntity saved = subscriptionRepository.save(updated);
+        return toResponse(saved);
+    }
     public void deleteSubscription(String id) throws EntityNotFoundException {
         if (!subscriptionRepository.existsById(id)) {
             throw new EntityNotFoundException(id);
@@ -73,5 +110,12 @@ public class SubscriptionService {
             subscription.duration(),
             subscription.end_date()
         );
+    }
+
+    public String calculateEndDate(String end_date, Integer durationDays) {
+            DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate Today=LocalDate.now();
+            LocalDate LastExpiryDate = (end_date==null || Today.isAfter(LocalDate.parse(end_date)) )?Today:LocalDate.parse(end_date);
+            return LastExpiryDate.plusDays(durationDays).format(format);            
     }
 }

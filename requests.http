@@ -99,7 +99,6 @@ Content-Type: application/json
     "videoUrl":"https://google.com"
 }
 
-<<<<<<< HEAD
 ### Update genre (PUT)
 PUT http://localhost:8080/api/genres/{{createGenre2.response.body.id}}
 Content-Type: application/json
@@ -120,8 +119,27 @@ Content-Type: application/json
     "end_date": "11.03.2026"
 }
 
-=======
->>>>>>> 54143eb3aa44252ff2c2809972470e22c29c662e
+### Renew Subscription (PUT)
+PATCH http://localhost:8080/api/subscriptions/subscribe/69b574dfc77f70080e866acb
+Content-Type: application/json
+
+{
+    "userId":"69b574dfc77f70080e866acb"
+}
+
+### Renew Subscription (PUT)
+PATCH http://localhost:8080/api/subscriptions/subscribe/69b574dfc77f70080e866acb
+Content-Type: application/json
+
+{
+    "userId":"69b574dfc77f70080e866acb",
+    "name":"20 day subscription trial",
+    "duration":20,
+    "price": 5000,
+    "end_date":"2026-03-15"
+}
+
+
 ### Change user name (PATCH)
 PATCH http://localhost:8080/api/users/{{createUser.response.body.id}}/name
 Content-Type: application/json
