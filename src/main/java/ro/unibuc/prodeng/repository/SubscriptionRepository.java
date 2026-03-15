@@ -10,4 +10,5 @@ import ro.unibuc.prodeng.model.SubscriptionEntity;
 @Repository
 public interface SubscriptionRepository extends MongoRepository<SubscriptionEntity, String> {
     Optional<SubscriptionEntity> findByUserId(String userId);
+    
 }

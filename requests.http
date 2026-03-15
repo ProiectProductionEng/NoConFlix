@@ -2,6 +2,10 @@
 # Prerequisite: humao.rest-client Vscode plugin (already present on codespace)
 # High-level overview of REST API concepts used here: https://www.packtpub.com/en-us/learning/how-to-tutorials/what-are-rest-verbs-and-status-codes-tutorial
 
+
+### Viewing Movie endpoint 
+GET http://localhost:8080/api/movies/69b574dfc77f70080e866acb/watching/69b57496c77f70080e866ac9
+
 ### Get all users
 GET http://localhost:8080/api/users
 
@@ -14,6 +18,8 @@ GET http://localhost:8080/api/genres
 ### Get all subscriptions
 GET http://localhost:8080/api/subscriptions
 
+### Get all availabilities
+GET http://localhost:8080/api/availabilities
 
 ### Create a new user (run this to populate variables for other requests)
 # @name createUser
@@ -69,6 +75,17 @@ Content-Type: application/json
     "price": 0.0,
     "duration": 3000,
     "end_date": "31.03.2026"
+}
+
+### Create a new subscription
+# @name createAvailability
+POST http://localhost:8080/api/availabilities
+Content-Type: application/json
+
+{
+    "movieId": "69b57496c77f70080e866ac9",
+    "subscriptionId": "69b57904b3378a0940b998e6",
+    "availableUntil_date": "2026-05-31"
 }
 
 ### Get user by ID (uses ID from createUser response)
@@ -153,12 +170,11 @@ DELETE http://localhost:8080/api/users/{{createUser.response.body.id}}
 
 ### Delete movie
 DELETE http://localhost:8080/api/movies/{{createMovie.response.body.id}}
-<<<<<<< HEAD
 
 ### Delete genre
 DELETE http://localhost:8080/api/genres/{{createGenre.response.body.id}}
 
 ### Delete subscription
 DELETE http://localhost:8080/api/subscriptions/{{createSubscription.response.body.id}}
-=======
->>>>>>> 54143eb3aa44252ff2c2809972470e22c29c662e
+
+
