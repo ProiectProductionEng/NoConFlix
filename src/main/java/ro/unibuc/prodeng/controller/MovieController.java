@@ -16,6 +16,7 @@ import ro.unibuc.prodeng.exception.EntityNotFoundException;
 import ro.unibuc.prodeng.model.MovieEntity;
 import ro.unibuc.prodeng.service.MovieService;
 import ro.unibuc.prodeng.service.GenreService;
+import ro.unibuc.prodeng.service.GenreService;
 
 @RestController
 @RequestMapping("/api/movies")
@@ -23,6 +24,7 @@ public class MovieController {
 
     @Autowired
     private MovieService movieService;
+
 
 
     @GetMapping
