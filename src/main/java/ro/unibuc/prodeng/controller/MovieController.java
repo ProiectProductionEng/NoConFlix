@@ -8,14 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
-import ro.unibuc.prodeng.request.ChangeNameRequest;
 import ro.unibuc.prodeng.request.EditMovieRequest;
-import ro.unibuc.prodeng.request.CreateUserRequest;
 import ro.unibuc.prodeng.request.CreateMovieRequest;
-import ro.unibuc.prodeng.response.UserResponse;
 import ro.unibuc.prodeng.response.MovieResponse;
 import ro.unibuc.prodeng.exception.EntityNotFoundException;
 import ro.unibuc.prodeng.service.MovieService;
+import ro.unibuc.prodeng.service.GenreService;
 
 @RestController
 @RequestMapping("/api/movies")
@@ -23,6 +21,7 @@ public class MovieController {
 
     @Autowired
     private MovieService movieService;
+
 
     @GetMapping
     public ResponseEntity<List<MovieResponse>> getAllMovies() throws EntityNotFoundException {
@@ -49,5 +48,18 @@ public class MovieController {
     public ResponseEntity<Void> deleteMovie(@PathVariable String id) throws EntityNotFoundException {
         movieService.deleteMovie(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/recommended/{uid}")
+    public ResponseEntity<List<MovieResponse>> getRecommendedMovies(@PathVariable String uid) throws EntityNotFoundException {
+        List<MovieResponse> movies = movieService.getAllMovies();
+        // for this I need watchlist and watched implemented, I can't get what the user saved so I can't get those genres :(
+        return ResponseEntity.ok(movies);
+    }
+
+    @GetMapping("/{uid}/watching/{id}")
+    public ResponseEntity<MovieResponse> watchingMovie(@PathVariable String uid, @PathVariable String id) throws EntityNotFoundException {
+        MovieResponse watchedMovie = movieService.watchMovie(id,uid);
+        return ResponseEntity.ok(watchedMovie);
     }
 }

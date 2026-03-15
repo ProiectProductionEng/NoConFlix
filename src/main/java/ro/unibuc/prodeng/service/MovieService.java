@@ -1,13 +1,23 @@
 package ro.unibuc.prodeng.service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.time.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ro.unibuc.prodeng.model.UserEntity;
 import ro.unibuc.prodeng.model.MovieEntity;
+import ro.unibuc.prodeng.model.GenreEntity;
+import ro.unibuc.prodeng.model.AvailabilityEntity;
+import ro.unibuc.prodeng.model.SubscriptionEntity;
+import ro.unibuc.prodeng.repository.AvailabilityRepository;
+import ro.unibuc.prodeng.repository.GenreRepository;
 import ro.unibuc.prodeng.repository.MovieRepository;
+import ro.unibuc.prodeng.repository.AvailabilityRepository;
+import ro.unibuc.prodeng.repository.SubscriptionRepository;
 import ro.unibuc.prodeng.request.CreateUserRequest;
 import ro.unibuc.prodeng.request.CreateMovieRequest;
 import ro.unibuc.prodeng.response.UserResponse;
@@ -20,6 +30,15 @@ public class MovieService {
 
     @Autowired
     private MovieRepository movieRepository;
+
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
+
+    @Autowired
+    private AvailabilityRepository availabilityRepository;
+
+    @Autowired
+    private GenreRepository genreRepository;
 
     public List<MovieResponse> getAllMovies() throws EntityNotFoundException {
         return movieRepository.findAll().stream().map(this::toResponse).toList();
@@ -67,6 +86,18 @@ public class MovieService {
         movieRepository.deleteById(id);
     }
 
+    public MovieResponse watchMovie(String id, String uid) throws EntityNotFoundException{
+        SubscriptionEntity subscription = subscriptionRepository
+        .findByUserId(uid).orElseThrow(() -> new EntityNotFoundException(uid));
+        AvailabilityEntity availability = availabilityRepository
+        .findByMovieIdAndSubscriptionId(id, subscription.id()).orElseThrow(() -> new EntityNotFoundException(id));
+        
+        LocalDate Today=LocalDate.now();
+            if(Today.isAfter(LocalDate.parse(subscription.end_date())) || Today.isAfter(LocalDate.parse(availability.availableUntil_date())))
+                throw new IllegalStateException("Expired!!");
+        MovieEntity movieToBeWatched=movieRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
+        return toResponse(movieToBeWatched);
+    }
     private MovieResponse toResponse(MovieEntity movie) {
         return new MovieResponse(
             movie.id(),
