@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ro.unibuc.prodeng.model.MovieEntity;
+import ro.unibuc.prodeng.model.GenreEntity;
 import ro.unibuc.prodeng.model.AvailabilityEntity;
 import ro.unibuc.prodeng.model.SubscriptionEntity;
 import ro.unibuc.prodeng.repository.AvailabilityRepository;
@@ -19,6 +20,8 @@ import ro.unibuc.prodeng.model.SubscriptionEntity;
 import ro.unibuc.prodeng.repository.AvailabilityRepository;
 import ro.unibuc.prodeng.repository.GenreRepository;
 import ro.unibuc.prodeng.repository.MovieRepository;
+import ro.unibuc.prodeng.repository.AvailabilityRepository;
+import ro.unibuc.prodeng.repository.SubscriptionRepository;
 import ro.unibuc.prodeng.repository.RatingRepository;
 import ro.unibuc.prodeng.repository.SubscriptionRepository;
 import ro.unibuc.prodeng.request.CreateMovieRequest;
