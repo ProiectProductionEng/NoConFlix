@@ -23,10 +23,16 @@ public class ReviewService {
         this.userService = userService;
     }
 
+
     public ReviewResponse addReview(CreateReviewRequest request) throws EntityNotFoundException {
 
-        // verific existenta userului
         userService.getUserEntityById(request.userId());
+
+        ReviewEntity existing = reviewRepository.findByUserIdAndMovieId(request.userId(), request.movieId()).orElse(null);
+
+        if (existing != null) {
+            throw new IllegalArgumentException("User already reviewed this movie");
+        }
 
         ReviewEntity review = new ReviewEntity();
         review.setUserId(request.userId());
@@ -76,25 +82,25 @@ public class ReviewService {
     public ReviewResponse updateReview(String id, UpdateReviewRequest request)
         throws EntityNotFoundException {
 
-    ReviewEntity review = reviewRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException(id));
+        ReviewEntity review = reviewRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(id));
 
-    userService.getUserEntityById(request.userId());
+        userService.getUserEntityById(request.userId());
 
-    if (!review.getUserId().equals(request.userId())) {
-        throw new IllegalArgumentException("User not allowed to update this review");
+        if (!review.getUserId().equals(request.userId())) {
+            throw new IllegalArgumentException("User not allowed to update this review");
+        }
+
+        review.setComment(request.comment());
+
+        ReviewEntity saved = reviewRepository.save(review);
+
+        return new ReviewResponse(
+                saved.getId(),
+                saved.getMovieId(),
+                saved.getUserId(),
+                saved.getComment(),
+                saved.getCreatedAt()
+        );
     }
-
-    review.setComment(request.comment());
-
-    ReviewEntity saved = reviewRepository.save(review);
-
-    return new ReviewResponse(
-            saved.getId(),
-            saved.getMovieId(),
-            saved.getUserId(),
-            saved.getComment(),
-            saved.getCreatedAt()
-    );
-}
 }

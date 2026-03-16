@@ -1,11 +1,17 @@
 package ro.unibuc.prodeng.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 
 @Document(collection = "reviews")
+@CompoundIndex(
+    name = "unique_user_movie_review",
+    def = "{'userId':1,'movieId':1}",
+    unique = true
+)
 public class ReviewEntity {
 
     @Id
