@@ -11,7 +11,9 @@ import jakarta.validation.Valid;
 import ro.unibuc.prodeng.request.EditMovieRequest;
 import ro.unibuc.prodeng.request.CreateMovieRequest;
 import ro.unibuc.prodeng.response.MovieResponse;
+import ro.unibuc.prodeng.response.MovieWithRatingResponse;
 import ro.unibuc.prodeng.exception.EntityNotFoundException;
+import ro.unibuc.prodeng.model.MovieEntity;
 import ro.unibuc.prodeng.service.MovieService;
 import ro.unibuc.prodeng.service.GenreService;
 
@@ -61,5 +63,15 @@ public class MovieController {
     public ResponseEntity<MovieResponse> watchingMovie(@PathVariable String uid, @PathVariable String id) throws EntityNotFoundException {
         MovieResponse watchedMovie = movieService.watchMovie(id,uid);
         return ResponseEntity.ok(watchedMovie);
+    }
+
+    @GetMapping("/sorted/rating")
+    public ResponseEntity<List<MovieWithRatingResponse>> getMoviesByRating() {
+        return ResponseEntity.ok(movieService.getMoviesSortedByRating());
+    }
+
+    @GetMapping("/sorted/views")
+    public ResponseEntity<List<MovieResponse>> getMoviesByViews() {
+        return ResponseEntity.ok(movieService.getMoviesSortedByViews());
     }
 }

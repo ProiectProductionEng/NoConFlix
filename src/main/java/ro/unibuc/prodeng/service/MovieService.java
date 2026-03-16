@@ -1,27 +1,22 @@
 package ro.unibuc.prodeng.service;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.time.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ro.unibuc.prodeng.model.UserEntity;
 import ro.unibuc.prodeng.model.MovieEntity;
-import ro.unibuc.prodeng.model.GenreEntity;
 import ro.unibuc.prodeng.model.AvailabilityEntity;
 import ro.unibuc.prodeng.model.SubscriptionEntity;
 import ro.unibuc.prodeng.repository.AvailabilityRepository;
 import ro.unibuc.prodeng.repository.GenreRepository;
 import ro.unibuc.prodeng.repository.MovieRepository;
-import ro.unibuc.prodeng.repository.AvailabilityRepository;
+import ro.unibuc.prodeng.repository.RatingRepository;
 import ro.unibuc.prodeng.repository.SubscriptionRepository;
-import ro.unibuc.prodeng.request.CreateUserRequest;
 import ro.unibuc.prodeng.request.CreateMovieRequest;
-import ro.unibuc.prodeng.response.UserResponse;
 import ro.unibuc.prodeng.response.MovieResponse;
+import ro.unibuc.prodeng.response.MovieWithRatingResponse;
 import ro.unibuc.prodeng.exception.EntityNotFoundException;
 import ro.unibuc.prodeng.request.EditMovieRequest;
 
@@ -39,6 +34,9 @@ public class MovieService {
 
     @Autowired
     private GenreRepository genreRepository;
+
+    @Autowired
+    private RatingRepository ratingRepository;
 
     public List<MovieResponse> getAllMovies() throws EntityNotFoundException {
         return movieRepository.findAll().stream().map(this::toResponse).toList();
@@ -111,4 +109,43 @@ public class MovieService {
             movie.videoUrl()
         );
     }
+
+
+    public double getAverageRating(String movieId) {
+
+        Double avg = ratingRepository.getAverageRatingForMovie(movieId);
+
+        if (avg == null) {
+            return 0;
+        }
+
+        return avg;
+    }
+
+
+    public List<MovieWithRatingResponse> getMoviesSortedByRating() {
+
+        List<MovieEntity> movies = movieRepository.findAll();
+
+        return movies.stream()
+                .map(movie -> new MovieWithRatingResponse(
+                        movie.id(),
+                        movie.title(),
+                        movie.description(),
+                        movie.totalViews(),
+                        getAverageRating(movie.id())
+                ))
+                .sorted((a, b) -> Double.compare(b.averageRating(), a.averageRating()))
+                .toList();
+    }
+
+
+    public List<MovieResponse> getMoviesSortedByViews() {
+        return movieRepository.findAllByOrderByTotalViewsDesc()
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+
 }
