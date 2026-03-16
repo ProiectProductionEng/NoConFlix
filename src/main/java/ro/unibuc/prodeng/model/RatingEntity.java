@@ -1,9 +1,15 @@
 package ro.unibuc.prodeng.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "ratings")
+@CompoundIndex(
+    name = "unique_user_movie_rating",
+    def = "{'userId':1,'movieId':1}",
+    unique = true
+)
 public class RatingEntity {
 
     @Id
