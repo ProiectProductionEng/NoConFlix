@@ -10,4 +10,6 @@ import ro.unibuc.prodeng.model.MovieEntity;
 public interface MovieRepository extends MongoRepository<MovieEntity, String> {
 
     //List<MovieEntity> findByMovieId(String movieId);
+
+    List<MovieEntity> findAllByOrderByTotalViewsDesc();
 }

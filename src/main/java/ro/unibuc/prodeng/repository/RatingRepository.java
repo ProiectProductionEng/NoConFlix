@@ -2,6 +2,7 @@ package ro.unibuc.prodeng.repository;
 
 import ro.unibuc.prodeng.model.RatingEntity;
 
+import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
@@ -14,5 +15,11 @@ public interface RatingRepository extends MongoRepository<RatingEntity, String> 
     List<RatingEntity> findByMovieId(String movieId);
 
     boolean existsByUserIdAndMovieId(String userId, String movieId);
+
+    @Aggregation(pipeline = {
+        "{ $match: { movieId: ?0 } }",
+        "{ $group: { _id: '$movieId', avgRating: { $avg: '$value' } } }"
+    })
+    Double getAverageRatingForMovie(String movieId);
 
 }
