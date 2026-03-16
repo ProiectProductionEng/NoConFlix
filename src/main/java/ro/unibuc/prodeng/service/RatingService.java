@@ -10,7 +10,6 @@ import ro.unibuc.prodeng.request.UpdateRatingRequest;
 import ro.unibuc.prodeng.response.RatingResponse;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RatingService {
@@ -24,34 +23,27 @@ public class RatingService {
     }
 
     public RatingResponse addRating(CreateRatingRequest request) throws EntityNotFoundException {
-    
-    //verific existenta userului
-    userService.getUserEntityById(request.userId());
 
-    Optional<RatingEntity> existing =
-            ratingRepository.findByUserIdAndMovieId(request.userId(), request.movieId());
+        userService.getUserEntityById(request.userId());
 
-    RatingEntity rating;
+        if (ratingRepository.existsByUserIdAndMovieId(request.userId(), request.movieId())) {
+            throw new IllegalArgumentException("User already rated this movie");
+        }
 
-    if (existing.isPresent()) {
-        rating = existing.get();
-        rating.setValue(request.value());
-    } else {
-        rating = new RatingEntity();
+        RatingEntity rating = new RatingEntity();
         rating.setUserId(request.userId());
         rating.setMovieId(request.movieId());
         rating.setValue(request.value());
+
+        RatingEntity saved = ratingRepository.save(rating);
+
+        return new RatingResponse(
+                saved.getId(),
+                saved.getMovieId(),
+                saved.getUserId(),
+                saved.getValue()
+        );
     }
-
-    RatingEntity saved = ratingRepository.save(rating);
-
-    return new RatingResponse(
-            saved.getId(),
-            saved.getMovieId(),
-            saved.getUserId(),
-            saved.getValue()
-    );
-}
 
     public void deleteRating(String id, String userId) throws EntityNotFoundException {
 
@@ -82,24 +74,24 @@ public class RatingService {
 
     public RatingResponse updateRating(String id, UpdateRatingRequest request) throws EntityNotFoundException {
 
-    RatingEntity rating = ratingRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException(id));
+        RatingEntity rating = ratingRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(id));
 
-    userService.getUserEntityById(request.userId());
+        userService.getUserEntityById(request.userId());
 
-    if (!rating.getUserId().equals(request.userId())) {
-        throw new IllegalArgumentException("User not allowed to update this rating");
+        if (!rating.getUserId().equals(request.userId())) {
+            throw new IllegalArgumentException("User not allowed to update this rating");
+        }
+
+        rating.setValue(request.value());
+
+        RatingEntity saved = ratingRepository.save(rating);
+
+        return new RatingResponse(
+                saved.getId(),
+                saved.getMovieId(),
+                saved.getUserId(),
+                saved.getValue()
+        );
     }
-
-    rating.setValue(request.value());
-
-    RatingEntity saved = ratingRepository.save(rating);
-
-    return new RatingResponse(
-            saved.getId(),
-            saved.getMovieId(),
-            saved.getUserId(),
-            saved.getValue()
-    );
-}
 }
