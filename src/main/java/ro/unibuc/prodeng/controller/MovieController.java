@@ -74,4 +74,9 @@ public class MovieController {
     public ResponseEntity<List<MovieResponse>> getMoviesByViews() {
         return ResponseEntity.ok(movieService.getMoviesSortedByViews());
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<MovieResponse>> searchMovies(@RequestParam String query) {
+        return ResponseEntity.ok(movieService.searchMovies(query));
+    }
 }

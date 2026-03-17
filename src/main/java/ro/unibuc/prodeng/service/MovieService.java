@@ -148,4 +148,14 @@ public class MovieService {
     }
 
 
+    public List<MovieResponse> searchMovies(String query) {
+
+        List<MovieEntity> movies = movieRepository.searchByText(query);
+
+        return movies.stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+
 }
