@@ -18,12 +18,9 @@ import ro.unibuc.prodeng.repository.GenreRepository;
 import ro.unibuc.prodeng.repository.MovieRepository;
 import ro.unibuc.prodeng.repository.RatingRepository;
 import ro.unibuc.prodeng.repository.SubscriptionRepository;
-<<<<<<< HEAD
 import ro.unibuc.prodeng.repository.RatingRepository;
 import ro.unibuc.prodeng.repository.SubscriptionRepository;
 import ro.unibuc.prodeng.repository.WatchedRepository;
-=======
->>>>>>> 3eea164 ([FEAT] Added movie sorting by rating and total views (#16))
 import ro.unibuc.prodeng.request.CreateMovieRequest;
 import ro.unibuc.prodeng.response.MovieResponse;
 import ro.unibuc.prodeng.response.MovieWithRatingResponse;
