@@ -1,8 +1,12 @@
 package ro.unibuc.prodeng.service;
 
 import org.springframework.stereotype.Service;
+
+import ro.unibuc.prodeng.exception.EntityNotFoundException;
+import ro.unibuc.prodeng.model.UserEntity;
 import ro.unibuc.prodeng.model.Watched;
 import ro.unibuc.prodeng.repository.WatchedRepository;
+import ro.unibuc.prodeng.response.UserResponse;
 import ro.unibuc.prodeng.repository.MovieRepository;
 
 import java.time.Instant;
@@ -49,6 +53,23 @@ public class WatchedService {
 
                 var movie = movieOpt.get();
                 return watched.getLastTime() < movie.duration();
+            })
+            .toList();
+    }
+    public List<Watched> getAllWatchedForUser(String userId) throws EntityNotFoundException {
+    List<Watched> watchedList = watchedRepository.findByUserIdOrderByUpdatedAtDesc(userId);
+
+    return watchedList.stream()
+            .filter(watched -> {
+                Optional<ro.unibuc.prodeng.model.MovieEntity> movieOpt =
+                        movieRepository.findById(watched.getMovieId());
+
+                if (movieOpt.isEmpty()) {
+                    return false;
+                }
+
+                var movie = movieOpt.get();
+                return movie.duration()-watched.getLastTime()<=5;
             })
             .toList();
     }
