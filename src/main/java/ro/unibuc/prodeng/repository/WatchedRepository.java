@@ -9,6 +9,6 @@ import java.util.Optional;
 public interface WatchedRepository extends MongoRepository<Watched, String> {
 
     Optional<Watched> findByUserIdAndMovieId(String userId, String movieId);
-
+    List<Watched> findByUserId(String userId);
     List<Watched> findByUserIdOrderByUpdatedAtDesc(String userId);
 }
