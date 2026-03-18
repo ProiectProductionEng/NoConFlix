@@ -7,11 +7,17 @@
 GET http://localhost:8080/api/movies/69b574dfc77f70080e866acb/watching/69b57496c77f70080e866ac9
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ### Recommended films for a specified user
 GET http://localhost:8080/api/movies/recommended/69b574dfc77f70080e866acb
 
 =======
 >>>>>>> 36297b5 ([FEAT] Movies are watchable & available)
+=======
+### Recommended films for a specified user
+GET http://localhost:8080/api/movies/recommended/69b574dfc77f70080e866acb
+
+>>>>>>> 0071533 ([FEAT] Recommended films)
 ### Get all users
 GET http://localhost:8080/api/users
 

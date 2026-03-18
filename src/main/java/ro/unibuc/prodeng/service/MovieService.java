@@ -1,8 +1,6 @@
 package ro.unibuc.prodeng.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.time.*;
@@ -23,9 +21,6 @@ import ro.unibuc.prodeng.repository.GenreRepository;
 import ro.unibuc.prodeng.repository.MovieRepository;
 import ro.unibuc.prodeng.repository.RatingRepository;
 import ro.unibuc.prodeng.repository.SubscriptionRepository;
-import ro.unibuc.prodeng.repository.RatingRepository;
-import ro.unibuc.prodeng.repository.SubscriptionRepository;
-import ro.unibuc.prodeng.repository.WatchedRepository;
 import ro.unibuc.prodeng.request.CreateMovieRequest;
 import ro.unibuc.prodeng.response.MovieResponse;
 import ro.unibuc.prodeng.response.MovieWithRatingResponse;
