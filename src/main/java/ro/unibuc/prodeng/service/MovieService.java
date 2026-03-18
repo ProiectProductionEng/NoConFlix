@@ -1,6 +1,11 @@
 package ro.unibuc.prodeng.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+<<<<<<< HEAD
+import java.util.LinkedHashSet;
+=======
+>>>>>>> 0071533 ([FEAT] Recommended films)
 import java.util.List;
 import java.util.Set;
 import java.time.*;
