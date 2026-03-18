@@ -1,6 +1,7 @@
 package ro.unibuc.prodeng.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,14 @@ import ro.unibuc.prodeng.repository.GenreRepository;
 import ro.unibuc.prodeng.repository.MovieRepository;
 import ro.unibuc.prodeng.repository.RatingRepository;
 import ro.unibuc.prodeng.repository.SubscriptionRepository;
+import ro.unibuc.prodeng.repository.WatchedRepository;
 import ro.unibuc.prodeng.request.CreateMovieRequest;
 import ro.unibuc.prodeng.response.MovieResponse;
 import ro.unibuc.prodeng.response.MovieWithRatingResponse;
 import ro.unibuc.prodeng.exception.EntityNotFoundException;
 import ro.unibuc.prodeng.request.EditMovieRequest;
+import ro.unibuc.prodeng.repository.WatchedRepository;
+import ro.unibuc.prodeng.repository.WatchlistRepository;
 
 @Service
 public class MovieService {
@@ -34,6 +38,12 @@ public class MovieService {
 
     @Autowired
     private GenreRepository genreRepository;
+
+    @Autowired
+    private WatchedRepository watchedRepository;
+
+    @Autowired
+    private WatchlistRepository watchlistRepository;
 
     @Autowired
     private RatingRepository ratingRepository;
@@ -155,6 +165,16 @@ public class MovieService {
         return movies.stream()
                 .map(this::toResponse)
                 .toList();
+    }
+    public List<MovieResponse> getRecommendedMovies(String uid){
+        List<String> userWatchlist=watchlistRepository.findByUserId(uid).stream().map(w -> w.getMovieId()).toList();
+        List<String> userWatched = watchedRepository.findByUserId(uid).stream().map(w -> w.getMovieId()).toList();
+        List<String> allUserMovies = new ArrayList<>(userWatchlist);
+        allUserMovies.addAll(userWatched);
+        List<String> recommendedGenres = movieRepository.findAll().stream().filter(m -> allUserMovies.contains(m.id())).map(m -> m.genreId()).toList();
+
+        List<MovieResponse> RecommendedFilms = movieRepository.findAll().stream().filter(m -> !allUserMovies.contains(m.id()) && recommendedGenres.contains(m.genreId())).map(this::toResponse).toList();
+        return RecommendedFilms;
     }
 
 

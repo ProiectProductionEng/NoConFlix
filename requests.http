@@ -6,6 +6,9 @@
 ### Viewing Movie endpoint 
 GET http://localhost:8080/api/movies/69b574dfc77f70080e866acb/watching/69b57496c77f70080e866ac9
 
+### Recommended films for a specified user
+GET http://localhost:8080/api/movies/recommended/69b574dfc77f70080e866acb
+
 ### Get all users
 GET http://localhost:8080/api/users
 
