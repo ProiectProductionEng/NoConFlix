@@ -14,7 +14,7 @@ public interface MovieRepository extends MongoRepository<MovieEntity, String> {
 
     List<MovieEntity> findAllByOrderByTotalViewsDesc();
 
-    List<MovieEntity> findByTitleContainingIgnoreCase(String title);
+    List<MovieEntity> findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String title, String description);
 
     @Query("{ $text: { $search: ?0 } }")
     List<MovieEntity> searchByText(String text);

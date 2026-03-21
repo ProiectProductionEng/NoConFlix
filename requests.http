@@ -34,6 +34,16 @@ Content-Type: application/json
     "email": "prisoner24601@france.fr"
 }
 
+### Create a new user (run this to populate variables for other requests)
+# @name createUser2
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+    "name": "Andrei",
+    "email": "andrei@gmail.com"
+}
+
 ### Create a new genre
 # @name createGenre
 POST http://localhost:8080/api/genres
@@ -61,6 +71,22 @@ Content-Type: application/json
     "title": "Jaws",
     "description":"Pioneering horror film",
     "genreId": "{{createGenre.response.body.id}}", 
+    "releaseDate":"08.03.2026",
+    "duration":3000,
+    "thumbnailUrl":"https://google.com",
+    "videoUrl":"https://google.com"
+}
+
+
+### Create a new movie
+# @name createMovie2
+POST http://localhost:8080/api/movies
+Content-Type: application/json
+
+{
+    "title": "The Nun2",
+    "description":"Filmed in Romania",
+    "genreId": "69beef3f5ae342377bc5329f", 
     "releaseDate":"08.03.2026",
     "duration":3000,
     "thumbnailUrl":"https://google.com",
@@ -181,3 +207,94 @@ DELETE http://localhost:8080/api/genres/{{createGenre.response.body.id}}
 DELETE http://localhost:8080/api/subscriptions/{{createSubscription.response.body.id}}
 
 
+
+
+//RATING
+
+### Create rating
+# @name createRating
+POST http://localhost:8080/api/ratings
+Content-Type: application/json
+
+{
+    "userId": "69bef9ec5ae342377bc532b1",
+    "movieId": "69befbd45ae342377bc532b8",
+    "value": 5
+}
+
+### Get ratings for a movie
+GET http://localhost:8080/api/ratings/movie/69befbd45ae342377bc532b8
+
+### Update rating
+PUT http://localhost:8080/api/ratings/69befc475ae342377bc532bb
+Content-Type: application/json
+
+{
+    "userId": "69bef9ec5ae342377bc532b1",
+    "value": 2
+}
+
+### Delete rating
+DELETE http://localhost:8080/api/ratings/69befcdc5ae342377bc532bc?userId=69bef9ec5ae342377bc532b1
+
+
+
+//REVIEW
+
+### Create review
+# @name createReview
+POST http://localhost:8080/api/reviews
+Content-Type: application/json
+
+{
+    "userId": "69bef7385ae342377bc532aa",
+    "movieId": "69beef5e5ae342377bc532a1",
+    "comment": "Foarte bun filmul!"
+}
+
+### Get reviews for a movie
+GET http://localhost:8080/api/reviews/movie/69beef5e5ae342377bc532a1
+
+### Update review
+PUT http://localhost:8080/api/reviews/69bef8e15ae342377bc532b0
+Content-Type: application/json
+
+{
+    "userId": "69bef7385ae342377bc532aa",
+    "comment": "nu recomand"
+}
+
+### Delete review
+DELETE http://localhost:8080/api/reviews/69bef8e15ae342377bc532b0?userId=69bef7385ae342377bc532aa
+
+
+
+### Get movies sorted by rating
+GET http://localhost:8080/api/movies/sorted/rating
+
+
+### Get movies sorted by views
+GET http://localhost:8080/api/movies/sorted/views
+
+
+### Search movies (by text)
+GET http://localhost:8080/api/movies/search?query=jaws
+
+### Search movies (by text) - case sensitive
+GET http://localhost:8080/api/movies/search?query=JAWS
+
+### Search movies by description
+GET http://localhost:8080/api/movies/search?query=horror
+
+
+### Search movies by description(partial word)
+GET http://localhost:8080/api/movies/search?query=rom
+
+### Search movies by description
+GET http://localhost:8080/api/movies/search?query=carrey
+
+### Search movies by description(more words)
+GET http://localhost:8080/api/movies/search?query=jim carrey
+
+### Search by title(partial word)
+GET http://localhost:8080/api/movies/search?query=bea
