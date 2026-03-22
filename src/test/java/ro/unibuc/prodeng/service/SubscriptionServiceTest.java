@@ -3,6 +3,7 @@ package ro.unibuc.prodeng.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -10,6 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import ro.unibuc.prodeng.model.SubscriptionEntity;
 import ro.unibuc.prodeng.repository.SubscriptionRepository;
+import ro.unibuc.prodeng.repository.UserRepository;
 import ro.unibuc.prodeng.request.CreateSubscriptionRequest;
 import ro.unibuc.prodeng.request.EditSubscriptionRequest;
 import ro.unibuc.prodeng.response.SubscriptionResponse;
@@ -30,6 +32,9 @@ class SubscriptionServiceTest {
     @Mock
     private SubscriptionRepository subscriptionRepository;
 
+    @Mock
+    private UserRepository userRepository;
+    
     @InjectMocks
     private SubscriptionService subscriptionService;
 
@@ -173,4 +178,127 @@ class SubscriptionServiceTest {
         // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> subscriptionService.deleteSubscription("subscription-999"));
     }
+
+    @Test
+    void testSubscribeUser_existingUserWithoutPreviousSubscription_createsSuccessfully() {
+        // Arrange
+        String uid = "user-1";
+
+        EditSubscriptionRequest request = new EditSubscriptionRequest(
+                uid,
+                "Premium",
+                29.99f,
+                30,
+                "2026-03-22"
+        );
+
+        SubscriptionEntity savedEntity = new SubscriptionEntity(
+                null,
+                uid,
+                "Premium",
+                29.99f,
+                30,
+                "calculated-date" // sau valoarea reală dacă știi exact cum calculează
+        );
+
+        when(userRepository.existsById(uid)).thenReturn(true);
+        when(subscriptionRepository.findByUserId(uid)).thenReturn(Optional.empty());
+        when(subscriptionRepository.save(any(SubscriptionEntity.class))).thenReturn(savedEntity);
+
+        // Act
+        SubscriptionResponse response = subscriptionService.subscribeUser(uid, request);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(uid, response.userId());
+        assertEquals("Premium", response.name());
+        assertEquals(29.99f, response.price());
+        assertEquals(30, response.duration());
+
+        verify(userRepository, times(1)).existsById(uid);
+        verify(subscriptionRepository, times(1)).findByUserId(uid);
+        verify(subscriptionRepository, times(1)).save(any(SubscriptionEntity.class));
+    }
+
+    @Test
+void testSubscribeUser_nonExistingUserRequested_throwsEntityNotFoundException() {
+    // Arrange
+    String uid = "user-999";
+    EditSubscriptionRequest request = new EditSubscriptionRequest(
+            "Premium",
+            uid,
+            29.99f,
+            30,
+            "2026-03-22"
+    );
+
+    when(userRepository.existsById(uid)).thenReturn(false);
+
+    // Act + Assert
+    assertThrows(EntityNotFoundException.class, () -> {
+        subscriptionService.subscribeUser(uid, request);
+    });
+
+    verify(userRepository, times(1)).existsById(uid);
+    verify(subscriptionRepository, never()).findByUserId(anyString());
+    verify(subscriptionRepository, never()).save(any());
+    }
+    @Test
+void testSubscribeUser_existingUserWithPreviousSubscription_keepsOldValuesForNullFields() {
+    // Arrange
+    String uid = "user-1";
+    String subscriptionId = "sub-1";
+
+    EditSubscriptionRequest request = new EditSubscriptionRequest(
+            null,
+            null,
+            20.0f,
+            null,
+            null
+    );
+
+    SubscriptionEntity oldSubscription = new SubscriptionEntity(
+            subscriptionId,
+            uid,
+            "Basic",
+            10.0f,
+            30,
+            "2026-03-01"
+    );
+
+    SubscriptionEntity userSubscriptionRef = new SubscriptionEntity(
+            subscriptionId,
+            uid,
+            "Basic",
+            10.0f,
+            30,
+            "2026-03-01"
+    );
+
+    when(userRepository.existsById(uid)).thenReturn(true);
+    when(subscriptionRepository.findByUserId(uid)).thenReturn(Optional.of(userSubscriptionRef));
+    when(subscriptionRepository.findById(subscriptionId)).thenReturn(Optional.of(oldSubscription));
+    when(subscriptionRepository.save(any(SubscriptionEntity.class)))
+            .thenAnswer(invocation -> invocation.getArgument(0));
+
+    // Act
+    SubscriptionResponse response = subscriptionService.subscribeUser(uid, request);
+
+    // Assert
+    assertNotNull(response);
+    assertEquals(uid, response.userId());
+    assertEquals("Basic", response.name());   // din vechi
+    assertEquals(20.0f, response.price());    // din request
+    assertEquals(30, response.duration());    // din vechi
+
+    ArgumentCaptor<SubscriptionEntity> captor = ArgumentCaptor.forClass(SubscriptionEntity.class);
+    verify(subscriptionRepository).save(captor.capture());
+
+    SubscriptionEntity saved = captor.getValue();
+    assertEquals(subscriptionId, saved.id());
+    assertEquals(uid, saved.userId());
+    assertEquals("Basic", saved.name());
+    assertEquals(20.0f, saved.price());
+    assertEquals(30, saved.duration());
+}
 }

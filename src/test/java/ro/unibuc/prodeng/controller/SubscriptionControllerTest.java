@@ -134,6 +134,45 @@ class SubscriptionControllerTest {
 
         verify(subscriptionService, times(1)).deleteSubscription(subscriptionId);
     }
-   }
+    @Test
+    void testSubscribeUser_validRequest_returns200AndSubscription() throws Exception {
+        // Arrange
+        String uid = "user-1";
+
+        EditSubscriptionRequest request = new EditSubscriptionRequest(
+                uid,
+                "Premium",
+                29.99f,
+                30,
+                "2026-03-22"
+        );
+
+        SubscriptionResponse response = new SubscriptionResponse(
+                "sub-1",
+                uid,
+                "Premium",
+                29.99f,
+                30,
+                "2026-04-21"
+        );
+
+        when(subscriptionService.subscribeUser(eq(uid), any(EditSubscriptionRequest.class)))
+                .thenReturn(response);
+
+        // Act & Assert
+        mockMvc.perform(patch("/api/subscriptions/subscribe/{uid}", uid)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("sub-1"))
+                .andExpect(jsonPath("$.userId").value(uid))
+                .andExpect(jsonPath("$.name").value("Premium"))
+                .andExpect(jsonPath("$.price").value(29.99))
+                .andExpect(jsonPath("$.duration").value(30));
+
+        verify(subscriptionService, times(1))
+                .subscribeUser(eq(uid), any(EditSubscriptionRequest.class));
+    }
+    }
    
    // Further tests go here
