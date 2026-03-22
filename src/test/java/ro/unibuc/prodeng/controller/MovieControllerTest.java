@@ -2,11 +2,10 @@ package ro.unibuc.prodeng.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ro.unibuc.prodeng.exception.EntityNotFoundException;
 import ro.unibuc.prodeng.request.CreateMovieRequest;
 import ro.unibuc.prodeng.request.EditMovieRequest;
 import ro.unibuc.prodeng.response.MovieResponse;
-import ro.unibuc.prodeng.response.MovieResponse;
+import ro.unibuc.prodeng.response.MovieWithRatingResponse;
 import ro.unibuc.prodeng.service.MovieService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -146,6 +144,60 @@ class MovieControllerTest {
 
         verify(movieService, times(1)).deleteMovie(movieId);
     }
-   }
+    
+
+    @Test
+    void testSearchMovies_withQuery_returnsMatchingMovies() throws Exception {
+        // Arrange
+        List<MovieResponse> results = List.of(testMovie1);
+
+        when(movieService.searchMovies("gatsby")).thenReturn(results);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/movies/search")
+                .param("query", "gatsby"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].title", is("The Great Gatsby")));
+
+        verify(movieService).searchMovies("gatsby");
+    }
+
+
+    @Test
+    void testGetMoviesSortedByViews_returnsSortedList() throws Exception {
+        // Arrange
+        List<MovieResponse> movies = List.of(testMovie1, testMovie2);
+
+        when(movieService.getMoviesSortedByViews()).thenReturn(movies);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/movies/sorted/views"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)));
+
+        verify(movieService).getMoviesSortedByViews();
+    }
+
+    @Test
+    void testGetMoviesSortedByRating_returnsSortedList() throws Exception {
+        // Arrange
+        MovieWithRatingResponse m1 = new MovieWithRatingResponse("movie-1","The Great Gatsby","desc",100,5.0);
+
+        MovieWithRatingResponse m2 =new MovieWithRatingResponse("movie-2","Spiderman","desc",50,3.0);
+
+        List<MovieWithRatingResponse> movies = List.of(m1, m2);
+
+        when(movieService.getMoviesSortedByRating()).thenReturn(movies);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/movies/sorted/rating"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].averageRating", is(5.0)));
+
+        verify(movieService).getMoviesSortedByRating();
+    }
+}
    
    // Further tests go here
