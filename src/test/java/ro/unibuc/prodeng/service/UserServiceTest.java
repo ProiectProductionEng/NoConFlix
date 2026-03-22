@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -64,6 +65,21 @@ class UserServiceTest {
         assertEquals("alice@example.com", result.email());
     }
 
+    @Test
+    void testGetUserEntityById_existingUserRequested_returnsUser() throws EntityNotFoundException {
+        // Arrange
+        UserEntity user = new UserEntity("1", "Alice", "alice@example.com");
+        when(userRepository.findById("1")).thenReturn(Optional.of(user));
+
+        // Act
+        UserEntity result = userService.getUserEntityById("1");
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("Alice", result.name());
+        assertEquals("alice@example.com", result.email());
+    }
+    
     @Test
     void testGetUserById_nonExistingUserRequested_throwsEntityNotFoundException() {
         // Arrange

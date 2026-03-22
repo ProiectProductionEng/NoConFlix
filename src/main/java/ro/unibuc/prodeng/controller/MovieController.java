@@ -33,7 +33,6 @@ public class MovieController {
 
     @PostMapping
     public ResponseEntity<MovieResponse> createMovie(@RequestBody CreateMovieRequest request) {
-        System.out.println("Test");
         MovieResponse movie = movieService.createMovie(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(movie);
     }
@@ -54,8 +53,7 @@ public class MovieController {
 
     @GetMapping("/recommended/{uid}")
     public ResponseEntity<List<MovieResponse>> getRecommendedMovies(@PathVariable String uid) throws EntityNotFoundException {
-        List<MovieResponse> movies = movieService.getAllMovies();
-        // for this I need watchlist and watched implemented, I can't get what the user saved so I can't get those genres :(
+        List<MovieResponse> movies = movieService.getRecommendedMovies(uid);
         return ResponseEntity.ok(movies);
     }
 

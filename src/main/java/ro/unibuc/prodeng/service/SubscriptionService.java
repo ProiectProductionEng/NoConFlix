@@ -112,7 +112,7 @@ public class SubscriptionService {
         );
     }
 
-    public String calculateEndDate(String end_date, Integer durationDays) {
+    private String calculateEndDate(String end_date, Integer durationDays) {
             DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate Today=LocalDate.now();
             LocalDate LastExpiryDate = (end_date==null || Today.isAfter(LocalDate.parse(end_date)) )?Today:LocalDate.parse(end_date);
