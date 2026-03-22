@@ -179,4 +179,98 @@ class MovieServiceTest {
         // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> movieService.deleteMovie("movie-999"));
     }
+
+
+
+    @Test
+    void searchMovies_whenTextSearchReturnsResults_shouldReturnTextResults() {
+        // Arrange
+        when(movieRepository.searchByText("gatsby"))
+                .thenReturn(List.of(testMovie1));
+
+        when(movieRepository.findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(anyString(), anyString()))
+                .thenReturn(List.of());
+
+        // Act
+        List<MovieResponse> result = movieService.searchMovies("gatsby");
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals("The Great Gatsby", result.get(0).title());
+    }
+
+
+
+    @Test
+    void searchMovies_whenTextSearchEmpty_shouldUseFallback() {
+        // Arrange
+        when(movieRepository.searchByText("roman"))
+                .thenReturn(List.of());
+
+        when(movieRepository.findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase("roman","roman"))
+                .thenReturn(List.of(testMovie2));
+
+        // Act
+        List<MovieResponse> result = movieService.searchMovies("roman");
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals("Spiderman: No way home", result.get(0).title());
+    }
+
+
+
+    @Test
+    void searchMovies_shouldCombineTextAndFallbackResults() {
+        // Arrange
+        when(movieRepository.searchByText("movie"))
+                .thenReturn(List.of(testMovie1));
+
+        when(movieRepository.findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase("movie","movie"))
+                .thenReturn(List.of(testMovie2));
+
+        // Act
+        List<MovieResponse> result = movieService.searchMovies("movie");
+
+        // Assert
+        assertEquals(2, result.size());
+    }
+
+
+
+    @Test
+    void getMoviesSortedByViews_shouldReturnDescendingOrder() {
+        // Arrange
+        MovieEntity m1 = new MovieEntity("1","A","",null,null,0,100,null,null);
+        MovieEntity m2 = new MovieEntity("2","B","",null,null,0,50,null,null);
+
+        when(movieRepository.findAllByOrderByTotalViewsDesc())
+                .thenReturn(List.of(m1, m2));
+
+        // Act
+        List<MovieResponse> result = movieService.getMoviesSortedByViews();
+
+        // Assert
+        assertEquals("A", result.get(0).title());
+        assertEquals("B", result.get(1).title());
+    }
+
+
+    @Test
+    void getMoviesSortedByRating_shouldSortDescending() {
+        // Arrange
+        when(movieRepository.findAll())
+                .thenReturn(List.of(testMovie1, testMovie2));
+
+        MovieService spy = spy(movieService);
+
+        doReturn(5.0).when(spy).getAverageRating("movie-1");
+        doReturn(3.0).when(spy).getAverageRating("movie-2");
+
+        // Act
+        var result = spy.getMoviesSortedByRating();
+
+        // Assert
+        assertEquals("The Great Gatsby", result.get(0).title());
+    }
 }
