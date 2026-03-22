@@ -118,6 +118,7 @@ class UserControllerTest {
         verify(userService, times(1)).getUserById(userId);
     }
 
+
     @Test
     void testCreateUser_validRequestProvided_createsAndReturnsUser() throws Exception {
         // Arrange
