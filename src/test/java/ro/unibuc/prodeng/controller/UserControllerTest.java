@@ -117,7 +117,7 @@ class UserControllerTest {
         
         verify(userService, times(1)).getUserById(userId);
     }
-    
+
     @Test
     void testCreateUser_validRequestProvided_createsAndReturnsUser() throws Exception {
         // Arrange
@@ -168,5 +168,16 @@ class UserControllerTest {
                 .andExpect(status().isNotFound());
         
         verify(userService, times(1)).changeName(eq(userId), anyString());
+    }
+
+    @Test
+    void testDeleteUser_ExistingUserRequested_deletesUser() throws Exception {
+        String userId = "1";
+        doNothing().when(userService).deleteUser(userId);
+
+        mockMvc.perform(delete("/api/users/{id}", userId))
+                .andExpect(status().isNoContent());
+
+        verify(userService, times(1)).deleteUser(userId);
     }
 }

@@ -3,7 +3,7 @@ public record MovieResponse(
     String  id,
     String  title,
     String  description,
-    String genreId,
+    String  genreId,
     String  releaseDate,
     Integer duration,
     Integer totalViews,
