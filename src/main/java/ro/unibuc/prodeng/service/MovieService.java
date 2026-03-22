@@ -2,7 +2,9 @@ package ro.unibuc.prodeng.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -160,12 +162,20 @@ public class MovieService {
 
     public List<MovieResponse> searchMovies(String query) {
 
-        List<MovieEntity> movies = movieRepository.searchByText(query);
+        List<MovieEntity> textResults = movieRepository.searchByText(query);
 
-        return movies.stream()
+        List<MovieEntity> fallbackResults =
+                movieRepository.findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(query, query);
+
+        Set<MovieEntity> combined = new LinkedHashSet<>();
+        combined.addAll(textResults);
+        combined.addAll(fallbackResults);
+
+        return combined.stream()
                 .map(this::toResponse)
                 .toList();
     }
+    
     public List<MovieResponse> getRecommendedMovies(String uid){
         List<String> userWatchlist=watchlistRepository.findByUserId(uid).stream().map(w -> w.getMovieId()).toList();
         List<String> userWatched = watchedRepository.findByUserId(uid).stream().map(w -> w.getMovieId()).toList();
