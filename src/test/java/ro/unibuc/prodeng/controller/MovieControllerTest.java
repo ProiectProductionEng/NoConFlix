@@ -198,6 +198,54 @@ class MovieControllerTest {
 
         verify(movieService).getMoviesSortedByRating();
     }
+
+    @Test
+    void testGetRecommendedMovies_withMultipleMovies_returnsListOfMovies() throws Exception {
+        // Arrange
+        String userId = "user-1";
+        List<MovieResponse> movies = Arrays.asList(testMovie1, testMovie2);
+
+        when(movieService.getRecommendedMovies(userId)).thenReturn(movies);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/movies/recommended/{uid}", userId)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+
+                .andExpect(jsonPath("$[0].id", is("movie-1")))
+                .andExpect(jsonPath("$[0].title", is("The Great Gatsby")))
+                .andExpect(jsonPath("$[0].description", is("the best movie ever")))
+
+                .andExpect(jsonPath("$[1].id", is("movie-2")))
+                .andExpect(jsonPath("$[1].title", is("Spiderman: No way home")))
+                .andExpect(jsonPath("$[1].description", is("newest movie")));
+
+        verify(movieService, times(1)).getRecommendedMovies(userId);
+    }
+
+    @Test
+    void testWatchMovie_withAvailableMovieRequest_returnsMovie() throws Exception {
+        // Arrange
+        String userId = "user-1";
+        when(movieService.watchMovie(testMovie1.id(),userId)).thenReturn(testMovie1);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/movies/{uid}/watching/{id}", userId,testMovie1.id())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is("movie-1")))
+                .andExpect(jsonPath("$.title", is("The Great Gatsby")))
+                .andExpect(jsonPath("$.description", is("the best movie ever")))
+                .andExpect(jsonPath("$.genreId", is("genre-commedy")))
+                .andExpect(jsonPath("$.releaseDate", is("2026-03-21")))
+                .andExpect(jsonPath("$.duration", is(3000)))
+                .andExpect(jsonPath("$.totalViews", is(5542543)))
+                .andExpect(jsonPath("$.thumbnailUrl", is("google.com")))
+                .andExpect(jsonPath("$.videoUrl", is("google.com")));
+
+        verify(movieService, times(1)).watchMovie(testMovie1.id(),userId);
+    }
 }
    
    // Further tests go here

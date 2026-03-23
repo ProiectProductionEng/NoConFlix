@@ -14,6 +14,6 @@ public interface WatchlistRepository extends MongoRepository<Watchlist, String> 
     Optional<Watchlist> findByUserIdAndMovieId(String userId, String movieId);
 
     List<Watchlist> findByUserIdOrderByCreatedAtDesc(String userId);
-    List<Watched> findByUserId(String userId);
+    List<Watchlist> findByUserId(String userId);
     void deleteByUserIdAndMovieId(String userId, String movieId);
 }
