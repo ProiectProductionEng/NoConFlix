@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.time.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,8 @@ import ro.unibuc.prodeng.model.SubscriptionEntity;
 import ro.unibuc.prodeng.repository.AvailabilityRepository;
 import ro.unibuc.prodeng.repository.GenreRepository;
 import ro.unibuc.prodeng.repository.MovieRepository;
+import ro.unibuc.prodeng.repository.RatingRepository;
+import ro.unibuc.prodeng.repository.SubscriptionRepository;
 import ro.unibuc.prodeng.repository.RatingRepository;
 import ro.unibuc.prodeng.repository.SubscriptionRepository;
 import ro.unibuc.prodeng.repository.WatchedRepository;
@@ -108,6 +111,7 @@ public class MovieService {
         MovieEntity movieToBeWatched=movieRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
         return toResponse(movieToBeWatched);
     }
+    
     private MovieResponse toResponse(MovieEntity movie) {
         return new MovieResponse(
             movie.id(),

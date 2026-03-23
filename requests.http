@@ -23,6 +23,8 @@ GET http://localhost:8080/api/subscriptions
 
 ### Get all availabilities
 GET http://localhost:8080/api/availabilities
+### Get all availabilities
+GET http://localhost:8080/api/availabilities
 
 ### Create a new user (run this to populate variables for other requests)
 # @name createUser
@@ -104,6 +106,17 @@ Content-Type: application/json
     "price": 0.0,
     "duration": 3000,
     "end_date": "31.03.2026"
+}
+
+### Create a new subscription
+# @name createAvailability
+POST http://localhost:8080/api/availabilities
+Content-Type: application/json
+
+{
+    "movieId": "69b57496c77f70080e866ac9",
+    "subscriptionId": "69b57904b3378a0940b998e6",
+    "availableUntil_date": "2026-05-31"
 }
 
 ### Create a new subscription
