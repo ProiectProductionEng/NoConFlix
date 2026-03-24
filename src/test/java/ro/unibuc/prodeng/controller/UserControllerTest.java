@@ -180,4 +180,73 @@ class UserControllerTest {
 
         verify(userService, times(1)).deleteUser(userId);
     }
+
+
+
+    @Test
+    void testChangeName_existingUserRequested_returnsUpdatedUser() throws Exception {
+        // Arrange
+        String userId = "1";
+        UserResponse updatedUser = new UserResponse("1", "John Updated", "john@example.com");
+        when(userService.changeName(eq(userId), eq("John Updated"))).thenReturn(updatedUser);
+
+        // Act & Assert
+        mockMvc.perform(patch("/api/users/{id}/name", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(changeNameRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is("1")))
+                .andExpect(jsonPath("$.name", is("John Updated")))
+                .andExpect(jsonPath("$.email", is("john@example.com")));
+
+        verify(userService, times(1)).changeName(userId, "John Updated");
+    }
+
+    @Test
+    void testChangeName_nonExistingUserRequested_returnsNotFound() throws Exception {
+        // Arrange
+        String userId = "999";
+        when(userService.changeName(eq(userId), anyString()))
+                .thenThrow(new EntityNotFoundException("User"));
+
+        // Act & Assert
+        mockMvc.perform(patch("/api/users/{id}/name", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(changeNameRequest)))
+                .andExpect(status().isNotFound());
+
+        verify(userService, times(1)).changeName(eq(userId), anyString());
+    }
+
+    @Test
+    void testGetUserByEmail_existingUserRequested_returnsUser() throws Exception {
+        // Arrange
+        when(userService.getUserByEmail("john@example.com")).thenReturn(testUser1);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/users/by-email")
+                        .param("email", "john@example.com")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is("1")))
+                .andExpect(jsonPath("$.name", is("John Doe")))
+                .andExpect(jsonPath("$.email", is("john@example.com")));
+
+        verify(userService, times(1)).getUserByEmail("john@example.com");
+    }
+
+    @Test
+    void testGetUserByEmail_nonExistingUserRequested_returnsNotFound() throws Exception {
+        // Arrange
+        when(userService.getUserByEmail("missing@example.com"))
+                .thenThrow(new EntityNotFoundException("User"));
+
+        // Act & Assert
+        mockMvc.perform(get("/api/users/by-email")
+                        .param("email", "missing@example.com")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(userService, times(1)).getUserByEmail("missing@example.com");
+    }
 }
