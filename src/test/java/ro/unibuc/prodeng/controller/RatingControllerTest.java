@@ -36,28 +36,28 @@ class RatingControllerTest {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    @BeforeEach
+    @BeforeEach  //se executa inainte de fiecare test
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(ratingController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(ratingController).build();  //simuleaza un server fake
     }
 
     @Test
     void addRating_validRequest_returnsCreated() throws Exception {
         // Arrange
-        CreateRatingRequest request = new CreateRatingRequest("u1", "m1", 5);
-        RatingResponse response = new RatingResponse("r1","m1","u1",5);
+        CreateRatingRequest request = new CreateRatingRequest("u1", "m1", 5);  //body-ul requestului
+        RatingResponse response = new RatingResponse("r1","m1","u1",5); //ceea ce vreau sa retunreze service-ul
 
-        when(ratingService.addRating(any())).thenReturn(response);
+        when(ratingService.addRating(any())).thenReturn(response); //apelez direct response
 
         // Act & Assert
-        mockMvc.perform(post("/api/ratings")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value("r1"))
+        mockMvc.perform(post("/api/ratings")  //simulez requestul http
+                .contentType(MediaType.APPLICATION_JSON)  //header
+                .content(objectMapper.writeValueAsString(request)))  //transform obiectul in json
+                .andExpect(status().isCreated())  //verific ca status code e 201
+                .andExpect(jsonPath("$.id").value("r1"))  //verific json response 
                 .andExpect(jsonPath("$.value").value(5));
 
-        verify(ratingService, times(1)).addRating(any());
+        verify(ratingService, times(1)).addRating(any());  //verific daca controllerul a apelat service-ul exact o data
     }
 
 
