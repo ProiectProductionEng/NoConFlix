@@ -213,8 +213,6 @@ class MovieServiceTest {
         assertThrows(EntityNotFoundException.class, () -> movieService.deleteMovie("movie-999"));
     }
 
-
-
     @Test
     void searchMovies_whenTextSearchReturnsResults_shouldReturnTextResults() {
         // Arrange
@@ -231,8 +229,6 @@ class MovieServiceTest {
         assertEquals(1, result.size());
         assertEquals("The Great Gatsby", result.get(0).title());
     }
-
-
 
     @Test
     void searchMovies_whenTextSearchEmpty_shouldUseFallback() {
@@ -251,8 +247,6 @@ class MovieServiceTest {
         assertEquals("Spiderman: No way home", result.get(0).title());
     }
 
-
-
     @Test
     void searchMovies_shouldCombineTextAndFallbackResults() {
         // Arrange
@@ -268,8 +262,6 @@ class MovieServiceTest {
         // Assert
         assertEquals(2, result.size());
     }
-
-
 
     @Test
     void getMoviesSortedByViews_shouldReturnDescendingOrder() {
@@ -287,7 +279,6 @@ class MovieServiceTest {
         assertEquals("A", result.get(0).title());
         assertEquals("B", result.get(1).title());
     }
-
 
     @Test
     void getMoviesSortedByRating_shouldSortDescending() {
@@ -354,6 +345,7 @@ class MovieServiceTest {
                 .findByMovieIdAndSubscriptionId(movieId, subscription.id());
         verify(movieRepository, times(1)).findById(movieId);
     }
+
     @Test
     void testWatchMovie_expiredSubscription_throwsIllegalStateException() {
         // Arrange
@@ -390,50 +382,50 @@ class MovieServiceTest {
     }
 
     @Test
-void testGetRecommendedMovies_userHasWatchedMovies_returnsRecommendedMovies() {
-    // Arrange
-    String userId = "user-1";
+    void testGetRecommendedMovies_userHasWatchedMovies_returnsRecommendedMovies() {
+        // Arrange
+        String userId = "user-1";
 
-    Watchlist watchlistMovie = new Watchlist( userId, "movie-1");
-    Watched watchedMovie = new Watched(userId, "movie-2",50);
+        Watchlist watchlistMovie = new Watchlist( userId, "movie-1");
+        Watched watchedMovie = new Watched(userId, "movie-2",50);
 
-    MovieEntity movie1 = new MovieEntity(
-            "movie-1", "Movie One", "desc1", "genre-action",
-            "2026-01-01", 120, 100, "thumb1", "video1"
-    );
+        MovieEntity movie1 = new MovieEntity(
+                "movie-1", "Movie One", "desc1", "genre-action",
+                "2026-01-01", 120, 100, "thumb1", "video1"
+        );
 
-    MovieEntity movie2 = new MovieEntity(
-            "movie-2", "Movie Two", "desc2", "genre-action",
-            "2026-01-02", 130, 200, "thumb2", "video2"
-    );
+        MovieEntity movie2 = new MovieEntity(
+                "movie-2", "Movie Two", "desc2", "genre-action",
+                "2026-01-02", 130, 200, "thumb2", "video2"
+        );
 
-    MovieEntity movie3 = new MovieEntity(
-            "movie-3", "Movie Three", "desc3", "genre-action",
-            "2026-01-03", 140, 300, "thumb3", "video3"
-    );
+        MovieEntity movie3 = new MovieEntity(
+                "movie-3", "Movie Three", "desc3", "genre-action",
+                "2026-01-03", 140, 300, "thumb3", "video3"
+        );
 
-    MovieEntity movie4 = new MovieEntity(
-            "movie-4", "Movie Four", "desc4", "genre-comedy",
-            "2026-01-04", 150, 400, "thumb4", "video4"
-    );
+        MovieEntity movie4 = new MovieEntity(
+                "movie-4", "Movie Four", "desc4", "genre-comedy",
+                "2026-01-04", 150, 400, "thumb4", "video4"
+        );
 
-    when(watchlistRepository.findByUserId(userId)).thenReturn(List.of(watchlistMovie));
-    when(watchedRepository.findByUserId(userId)).thenReturn(List.of(watchedMovie));
-    when(movieRepository.findAll()).thenReturn(List.of(movie1, movie2, movie3, movie4));
+        when(watchlistRepository.findByUserId(userId)).thenReturn(List.of(watchlistMovie));
+        when(watchedRepository.findByUserId(userId)).thenReturn(List.of(watchedMovie));
+        when(movieRepository.findAll()).thenReturn(List.of(movie1, movie2, movie3, movie4));
 
-    // Act
-    List<MovieResponse> result = movieService.getRecommendedMovies(userId);
+        // Act
+        List<MovieResponse> result = movieService.getRecommendedMovies(userId);
 
-    // Assert
-    assertNotNull(result);
-    assertEquals(1, result.size());
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
 
-    assertEquals("movie-3", result.get(0).id());
-    assertEquals("Movie Three", result.get(0).title());
-    assertEquals("genre-action", result.get(0).genreId());
+        assertEquals("movie-3", result.get(0).id());
+        assertEquals("Movie Three", result.get(0).title());
+        assertEquals("genre-action", result.get(0).genreId());
 
-    verify(watchlistRepository, times(1)).findByUserId(userId);
-    verify(watchedRepository, times(1)).findByUserId(userId);
-    verify(movieRepository, times(2)).findAll();
-}
+        verify(watchlistRepository, times(1)).findByUserId(userId);
+        verify(watchedRepository, times(1)).findByUserId(userId);
+        verify(movieRepository, times(2)).findAll();
+    }
 }
