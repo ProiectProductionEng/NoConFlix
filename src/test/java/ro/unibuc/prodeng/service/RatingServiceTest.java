@@ -37,38 +37,38 @@ public class RatingServiceTest {
     @Test
     void addRating_shouldSaveRating_whenValidRequest() throws Exception {
         // Arrange
-        CreateRatingRequest request = new CreateRatingRequest("u1", "m1", 5);
+        CreateRatingRequest request = new CreateRatingRequest("u1", "m1", 5); //creez input-ul pentru test: userul cu id-ul m1 ofera 5 stele filmului cu id u1
 
-        when(userService.getUserEntityById(anyString())).thenReturn(null);
-        when(ratingRepository.existsByUserIdAndMovieId(anyString(), anyString())).thenReturn(false);
+        when(userService.getUserEntityById(anyString())).thenReturn(null);  //simulez ca userul exista
+        when(ratingRepository.existsByUserIdAndMovieId(anyString(), anyString())).thenReturn(false);  //simulez ca userul nu a mai dat rating acestui film
 
-        RatingEntity saved = new RatingEntity();
+        RatingEntity saved = new RatingEntity();   //creez obiectul care ar veni din BD dupa save; simulez ce face repository-ul
         saved.setId("r1");
         saved.setUserId("u1");
         saved.setMovieId("m1");
         saved.setValue(5);
 
-        when(ratingRepository.save(any())).thenReturn(saved);
+        when(ratingRepository.save(any())).thenReturn(saved);  //nu salvez nimic real
 
         // Act
-        RatingResponse response = ratingService.addRating(request);
+        RatingResponse response = ratingService.addRating(request); //intru in metoda reala addRating; in addRating se folosesc regulile de mai sus
 
         // Assert
-        assertEquals("r1", response.id());
-        assertEquals(5, response.value());
+        assertEquals("r1", response.id());  //verific ca id-ul returnat e corect
+        assertEquals(5, response.value());  //verific ca ratingul returnat e corect
     }
 
 
     @Test
     void addRating_shouldThrowException_whenUserAlreadyRatedMovie() {
         // Arrange
-        CreateRatingRequest request = new CreateRatingRequest("u1", "m1", 5);
+        CreateRatingRequest request = new CreateRatingRequest("u1", "m1", 5); //user m1 incearca sa dea rating la filmul u1
 
-        when(userService.getUserEntityById(anyString())).thenReturn(null);
-        when(ratingRepository.existsByUserIdAndMovieId(anyString(), anyString())).thenReturn(true);
+        when(userService.getUserEntityById(anyString())).thenReturn(null);  //nu ma intereseaza userul, simulez ca exista unul 
+        when(ratingRepository.existsByUserIdAndMovieId(anyString(), anyString())).thenReturn(true);  //simulez ca userul a mai dat deja un rating
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class,() -> ratingService.addRating(request));
+        assertThrows(IllegalArgumentException.class,() -> ratingService.addRating(request));  //se verifica codul din lambda si se arunca exceptie
     }
 
     @Test
