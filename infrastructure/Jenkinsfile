@@ -67,7 +67,7 @@ pipeline {
             steps {
                 sh '''
                     git tag $IMAGE_TAG
-                    git push https://$GITHUB_TOKEN_PSW@github.com/NoConflix $IMAGE_TAG
+                    git push https://$GITHUB_TOKEN_PSW@github.com/ProiectProductionEng/NoConflix $IMAGE_TAG
                 '''
             }
         }
