@@ -317,7 +317,7 @@ class MovieServiceTest {
                 "availability1-1",
                 movieId,
                 subscription.id(),
-                "2026-04-23"
+                "2029-04-23"
         );
 
         when(subscriptionRepository.findByUserId(userId)).thenReturn(Optional.of(subscription));
