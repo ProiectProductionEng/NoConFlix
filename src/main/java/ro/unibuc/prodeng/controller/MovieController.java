@@ -13,10 +13,8 @@ import ro.unibuc.prodeng.request.CreateMovieRequest;
 import ro.unibuc.prodeng.response.MovieResponse;
 import ro.unibuc.prodeng.response.MovieWithRatingResponse;
 import ro.unibuc.prodeng.exception.EntityNotFoundException;
-import ro.unibuc.prodeng.model.MovieEntity;
 import ro.unibuc.prodeng.service.MovieService;
-import ro.unibuc.prodeng.service.GenreService;
-import ro.unibuc.prodeng.service.GenreService;
+import ro.unibuc.prodeng.service.MetricsService;
 
 @RestController
 @RequestMapping("/api/movies")
@@ -25,32 +23,57 @@ public class MovieController {
     @Autowired
     private MovieService movieService;
 
-
+    @Autowired
+    private MetricsService metricsService;
 
     @GetMapping
-    public ResponseEntity<List<MovieResponse>> getAllMovies() throws EntityNotFoundException {
+    public ResponseEntity<List<MovieResponse>> getAllMovies() {
+
+        long start = System.currentTimeMillis();
+
         List<MovieResponse> movies = movieService.getAllMovies();
+
+        metricsService.setTotalMovies(movies.size());
+        metricsService.setActiveUsers(1); // simplu pentru lab
+
+        metricsService.getRequestTimer()
+                .record(System.currentTimeMillis() - start, java.util.concurrent.TimeUnit.MILLISECONDS);
+
         return ResponseEntity.ok(movies);
     }
 
     @PostMapping
     public ResponseEntity<MovieResponse> createMovie(@RequestBody CreateMovieRequest request) {
-        MovieResponse movie = movieService.createMovie(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(movie);
+        try {
+            MovieResponse movie = movieService.createMovie(request);
+
+            metricsService.incrementMoviesAdded();   // business metric
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(movie);
+        } catch (Exception e) {
+            metricsService.incrementErrors();        // error metric
+            throw e;
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<MovieResponse> updateMovie(
             @PathVariable String id,
             @Valid @RequestBody EditMovieRequest request) throws EntityNotFoundException {
+
         MovieResponse movie = movieService.editMovie(id, request);
         return ResponseEntity.ok(movie);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMovie(@PathVariable String id) throws EntityNotFoundException {
-        movieService.deleteMovie(id);
-        return ResponseEntity.noContent().build();
+        try {
+            movieService.deleteMovie(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            metricsService.incrementErrors();        // error metric
+            throw e;
+        }
     }
 
     @GetMapping("/recommended/{uid}")
@@ -61,7 +84,7 @@ public class MovieController {
 
     @GetMapping("/{uid}/watching/{id}")
     public ResponseEntity<MovieResponse> watchingMovie(@PathVariable String uid, @PathVariable String id) throws EntityNotFoundException {
-        MovieResponse watchedMovie = movieService.watchMovie(id,uid);
+        MovieResponse watchedMovie = movieService.watchMovie(id, uid);
         return ResponseEntity.ok(watchedMovie);
     }
 
@@ -78,5 +101,16 @@ public class MovieController {
     @GetMapping("/search")
     public ResponseEntity<List<MovieResponse>> searchMovies(@RequestParam String query) {
         return ResponseEntity.ok(movieService.searchMovies(query));
+    }
+
+    @GetMapping("/id/{id}")
+    public ResponseEntity<MovieResponse> getMovieById(@PathVariable String id) throws EntityNotFoundException {
+        try {
+            MovieResponse movie = movieService.getMovieById(id);
+            return ResponseEntity.ok(movie);
+        } catch (Exception e) {
+            metricsService.incrementErrors();
+            throw e;
+        }
     }
 }

@@ -1,0 +1,36 @@
+groups:
+  - name: CustomAlerts
+    rules:
+
+      # --- AVAILABILITY ---
+      - alert: WARNING-ServiceDown
+        expr: up{job="spring-prod-eng-app"} == 0
+        for: 30s
+        labels:
+          severity: warning
+          category: availability
+        annotations:
+          summary: "Service is DOWN"
+          description: "Application is unreachable for more than 30 seconds."
+
+      # --- PERFORMANCE ---
+      - alert: WARNING-HighLatency
+        expr: rate(http_server_requests_seconds_sum[5m]) / rate(http_server_requests_seconds_count[5m]) > 0.5
+        for: 2m
+        labels:
+          severity: warning
+          category: performance
+        annotations:
+          summary: "High latency detected"
+          description: "Average request latency > 500ms."
+
+      # --- QUALITY ---
+      - alert: WARNING-HighErrorRate
+        expr: rate(http_server_requests_seconds_count{status=~"5.."}[5m]) / rate(http_server_requests_seconds_count[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          category: quality
+        annotations:
+          summary: "High error rate"
+          description: "More than 5% of requests are failing."

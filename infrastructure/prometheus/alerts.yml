@@ -1,0 +1,30 @@
+groups:
+  - name: prod-eng-alerts
+    rules:
+
+      - alert: ApplicationDown
+        expr: up{job="spring-prod-eng-app"} == 0
+        for: 10s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Spring application is DOWN"
+          description: "The prod-eng Spring Boot application is not responding."
+
+      - alert: HighRequestLatency
+        expr: http_server_requests_seconds_max > 0.1
+        for: 15s
+        labels:
+          severity: warning
+        annotations:
+          summary: "High request latency"
+          description: "Request duration exceeded 100ms."
+
+      - alert: HighCPUUsage
+        expr: process_cpu_usage > 0.5
+        for: 15s
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage exceeded 50%."

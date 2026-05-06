@@ -28,6 +28,8 @@ rule_files:
   - app-alerts.yml
   - canary-alerts.yml
   - container-alerts.yml
+  - custom-alerts.yml
+  - /etc/prometheus/alerts.yml
 
 alerting:
   alertmanagers:
